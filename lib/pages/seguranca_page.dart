@@ -9,8 +9,30 @@ class SegurancaPage extends StatefulWidget {
   _SegurancaPageState createState() => _SegurancaPageState();
 }
 
-class _SegurancaPageState extends State<SegurancaPage> {
+class _SegurancaPageState extends State<SegurancaPage>
+    with WidgetsBindingObserver {
   bool isLocked = false;
+  bool biometria = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance!.addObserver(this);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (biometria)
+      setState(() {
+        if (state != AppLifecycleState.resumed) isLocked = true;
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +62,13 @@ class _SegurancaPageState extends State<SegurancaPage> {
             style: TextStyle(
               fontWeight: FontWeight.w600,
               fontSize: 25,
+            ),
+          ),
+          ListTile(
+            title: Text('Proteger o App por Biometria'),
+            leading: Switch(
+              value: biometria,
+              onChanged: (valor) => setState(() => biometria = valor),
             ),
           ),
         ],
